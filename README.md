@@ -4,12 +4,17 @@ using:
 ```
 <template>
   <div id="app">
-    <pdf-editor :buttons="buttons" />
+    <pdf-editor 
+      :template="template"
+      :buttons="buttons"
+      @change="change"
+    />
   </div>
 </template>
 <script>
 import { defineComponent } from 'vue';
-import PdfEditor from '@/App.vue';
+import PdfEditor from '@psy21d/pdf-editor';
+var ls = require('local-storage');
 
 let buttons = {
   'user.surname': 'Фамилия',
@@ -53,7 +58,13 @@ export default defineComponent({
   },
   data() {
     return {
-      buttons
+      buttons,
+      template: ls('savedcontent') || '',
+    }
+  },
+  methods: {
+    change(html) {
+      ls('savedcontent', html);
     }
   }
 });
