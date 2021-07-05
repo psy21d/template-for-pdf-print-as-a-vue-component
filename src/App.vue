@@ -4,7 +4,7 @@
       <Toolbar
         @preview="pdftopreview"
         @download="pdfdownload"
-        @settable="settable"
+        @settemplate="settemplate"
         :buttons="buttons"
       />
     </div>
@@ -19,7 +19,12 @@
         @change="onEditorChange($event)"
       />
     </div>
-    <stylesComp />
+    <stylesComp />  
+  </div>
+  <div class="viewbox" v-show="showPreview">
+    <div class="div-close" @click="showPreview = false">
+      close
+    </div>
     <iframe ref="ifr" id="iframe-preview">
     </iframe>
   </div>
@@ -81,6 +86,8 @@ export default /*#__PURE__*/defineComponent({
     }
   },
 
+  emits: ['change'],
+
   setup(props, { emit }) {
     // Overwrite what is being copied to the clipboard.
     document.addEventListener('copy', function(e) {
@@ -97,6 +104,7 @@ export default /*#__PURE__*/defineComponent({
     });
 
     let ifr = ref(null);
+    let showPreview = ref(false)
 
     var toolbarOptions = [
         // ['table'],
@@ -197,6 +205,7 @@ export default /*#__PURE__*/defineComponent({
 
     const pdftopreview = () => {
       pdfPreview({ html: combineTemplate() })
+      showPreview.value = true
     }
 
     const pdfdownload = () => {
@@ -208,16 +217,30 @@ export default /*#__PURE__*/defineComponent({
       quill.insertText(selection.index, '${' + tpl + '}');
     }
 
-    const settable = () => {
-      //quill.tableModule.insertTable(3, 3);
-    }
-
-    return { state, onEditorBlur, onEditorFocus, onEditorReady, onEditorChange, pdftopreview, pdfdownload, settemplate, quill, settable, ifr }
+    return { state, onEditorBlur, showPreview, onEditorFocus, onEditorReady, onEditorChange, pdftopreview, pdfdownload, settemplate, quill, ifr }
   }
 })
 </script>
 
 <style>
+.viewbox {
+  width: 60%;
+  height: 60%;
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  display: flex;
+  flex-direction: column;
+}
+#iframe-preview {
+  height: 100%;
+}
+.div-close {
+  background-color: #fff;
+  border: solid 1px #ccc;
+  padding: 6px;
+  text-align: right;
+}
 .ql-editor {
   font-family: 'times-newer-roman'
 }
@@ -301,8 +324,4 @@ ql-snow .ql-picker.ql-font .ql-picker-label[data-value=verdana]::before,
   font-family: 'verdana';
 }
 
-#iframe-preview{
-  width:100%;
-  min-height:100vh;
-}
 </style>

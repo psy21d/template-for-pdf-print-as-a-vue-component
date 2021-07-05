@@ -1,8 +1,6 @@
 <template>
-    <button class="make-button" @click="$emit('print')">print</button>
     <button class="make-button" @click="$emit('preview')">preview</button>
     <button class="make-button" @click="$emit('download')">download</button>
-    <button class="make-button" @click="$emit('settable')">set table</button>
     <div>
       <button
         v-for="(button, n) in Object.keys(buttons)"
@@ -27,7 +25,7 @@ export default {
       default: buttons,
     },
   },
-  emits: ['print','preview','download','settable'],
+  emits: ['preview','download', 'settemplate'],
 
   data() {
     return {
