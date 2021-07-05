@@ -16,10 +16,10 @@ import json from "@rollup/plugin-json";
 
 
 // Get browserslist config and remove ie from es build targets
-const esbrowserslist = fs.readFileSync('./.browserslistrc')
-  .toString()
-  .split('\n')
-  .filter((entry) => entry && entry.substring(0, 2) !== 'ie');
+// const esbrowserslist = fs.readFileSync('./.browserslistrc')
+//   .toString()
+//   .split('\n')
+//   .filter((entry) => entry && entry.substring(0, 2) !== 'ie');
 
 // Extract babel preset-env config, to combine with esbrowserslist
 const babelPresetEnvConfig = require('../babel.config')
@@ -140,7 +140,7 @@ if (!argv.format || argv.format === 'es') {
             '@babel/preset-env',
             {
               ...babelPresetEnvConfig,
-              targets: esbrowserslist,
+              // targets: esbrowserslist,
             },
           ],
         ],
