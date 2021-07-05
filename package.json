@@ -1,6 +1,6 @@
 {
   "name": "@psy21d/pdf-editor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/pdf-editor.ssr.js",
   "browser": "dist/pdf-editor.esm.js",

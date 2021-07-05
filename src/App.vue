@@ -2,10 +2,8 @@
   <div class="view">
     <div class="toolbar">
       <Toolbar
-        @print="pdftoserver"
-        @settemplate="settemplate"
+        @preview="pdftopreview"
         @settable="settable"
-        @copy="copy"
         :buttons="buttons"
       />
     </div>
@@ -21,11 +19,13 @@
       />
     </div>
     <stylesComp />
+    <iframe ref="ifr">
+    </iframe>
   </div>
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import postToServer from "@/api/makepdf.js"
 import { makeHtml } from "@/template/makeHtml.js"
 import { css } from "@/components/quill/quill.core.css.js"
@@ -33,7 +33,6 @@ import Toolbar from "@/components/toolbar/Toolbar.vue"
 import { quillEditor, Quill } from 'vue3-quill'
 import { defineComponent } from 'vue';
 import stylesComp from "@/components/quill/quill.core.css.vue";
-var ls = require('local-storage');
 
 //import customQuillModule from 'customQuillModule'
 //Quill.register('modules/customQuillModule', customQuillModule)
@@ -70,10 +69,18 @@ export default /*#__PURE__*/defineComponent({
   props: {
     buttons: {
       type: Object
+    },
+    template: {
+      type: String,
+      default: '',
+    },
+    datasource: {
+      type: Object,
+      default: {},
     }
   },
 
-  setup(props) {
+  setup(props, { emit }) {
     // Overwrite what is being copied to the clipboard.
     document.addEventListener('copy', function(e) {
     // e.clipboardData is initially empty, but we can set it to the
@@ -87,6 +94,8 @@ export default /*#__PURE__*/defineComponent({
       console.log(e)
       console.log(e.clipboardData.setData)
     });
+
+    let ifr = ref(null);
 
     var toolbarOptions = [
         // ['table'],
@@ -115,8 +124,8 @@ export default /*#__PURE__*/defineComponent({
 
 
     const state = reactive({
-      content: ls('savedcontent'),
-      _content: '',
+      content: props.template,
+      _content: props.template,
       editorOption: {
         placeholder: 'core',
         modules: {
@@ -151,17 +160,54 @@ export default /*#__PURE__*/defineComponent({
     const onEditorChange = ({ /* quill */ html /* text */ }) => {
       // console.log('editor change!', quill, html, text)
       state._content = html;
-      ls('savedcontent', html);
+      emit('change', html)
     }
-
-    const pdftoserver = () => {
+    
+    const pdftopreview = () => {
       let pages = document.getElementsByClassName('ql-editor')
       let renderedPages = pages && pages[0] && pages[0].outerHTML
+      const re = /\${([A-Za-z\._]+)}/
+      let sp = renderedPages.split(re);
+      for (let i = 1; i < sp.length; i+=2) {
+        // console.log(sp[i-1])
+        // console.log(sp[i])
+        let sppieces = sp[i].split('.')
+        let rep = null
+        for (let j = 0; j < sppieces.length; j++) {
+          if (!rep) {
+            rep = props.datasource[sppieces[j]]
+          } else {
+            rep = rep[sppieces[j]]
+          }
+        } 
+        // console.log(rep)
+        sp[i] = rep
+      }
+
+      let combinereplace = sp.join('')
+
       let html = makeHtml({
-        body: renderedPages,
+        body: combinereplace,
         style: css,
       })
-      postToServer({html})
+
+      postToServer({html}).then(() => {
+        //console.log(response)
+        // const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+        // const link = document.createElement('iframe');
+        // link.setAttribute('src', downloadUrl);
+        // console.log(ifr)
+        // ifr.value.setAttribute('src', downloadUrl);
+        // URL.revokeObjectURL(downloadUrl);
+        // console.log('ok');
+
+        // const link = document.createElement('a');
+        // link.href = downloadUrl;
+        // link.setAttribute('download', 'generate.pdf'); 
+        // document.body.appendChild(link);
+        // link.click();
+        // link.remove();
+      })
     }
 
     const settemplate = (tpl) => {
@@ -173,7 +219,7 @@ export default /*#__PURE__*/defineComponent({
       //quill.tableModule.insertTable(3, 3);
     }
 
-    return { state, onEditorBlur, onEditorFocus, onEditorReady, onEditorChange, pdftoserver, settemplate, quill, settable }
+    return { state, onEditorBlur, onEditorFocus, onEditorReady, onEditorChange, pdftopreview, settemplate, quill, settable, ifr }
   }
 })
 </script>
