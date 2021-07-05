@@ -19,14 +19,14 @@
       />
     </div>
     <stylesComp />
-    <iframe ref="ifr">
+    <iframe ref="ifr" id="iframe-preview">
     </iframe>
   </div>
 </template>
 
 <script>
 import { ref, reactive } from 'vue'
-import postToServer from "@/api/makepdf.js"
+import { pdfDownload, pdfPreview } from "@/api/makepdf.js"
 import { makeHtml } from "@/template/makeHtml.js"
 import { css } from "@/components/quill/quill.core.css.js"
 import Toolbar from "@/components/toolbar/Toolbar.vue"
@@ -45,7 +45,7 @@ import stylesComp from "@/components/quill/quill.core.css.vue";
 //   true
 // );
 
-// specify the fonts you would 
+// specify the fonts you would
 var fonts = ['Arial', 'Courier', 'Garamond', 'Tahoma', 'Times New Roman', 'Times Newer Roman', 'Verdana'];
 // generate code friendly names
 function getFontName(font) {
@@ -59,7 +59,7 @@ Quill.register(Font, true);
 
 export default /*#__PURE__*/defineComponent({
   name: 'PdfEditor',
-  
+
   components: {
     Toolbar,
     quillEditor,
@@ -114,7 +114,7 @@ export default /*#__PURE__*/defineComponent({
         [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
         [{ 'font': fontNames }],
         [{ 'align': [] }],
-        
+
         ['link', 'image'],
 
         ['clean'],                                        // remove formatting button
@@ -162,7 +162,7 @@ export default /*#__PURE__*/defineComponent({
       state._content = html;
       emit('change', html)
     }
-    
+
     const pdftopreview = () => {
       let pages = document.getElementsByClassName('ql-editor')
       let renderedPages = pages && pages[0] && pages[0].outerHTML
@@ -179,7 +179,7 @@ export default /*#__PURE__*/defineComponent({
           } else {
             rep = rep[sppieces[j]]
           }
-        } 
+        }
         // console.log(rep)
         sp[i] = rep
       }
@@ -191,7 +191,7 @@ export default /*#__PURE__*/defineComponent({
         style: css,
       })
 
-      postToServer({html}).then(() => {
+      pdfPreview({html}).then(() => {
         //console.log(response)
         // const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
         // const link = document.createElement('iframe');
@@ -203,7 +203,7 @@ export default /*#__PURE__*/defineComponent({
 
         // const link = document.createElement('a');
         // link.href = downloadUrl;
-        // link.setAttribute('download', 'generate.pdf'); 
+        // link.setAttribute('download', 'generate.pdf');
         // document.body.appendChild(link);
         // link.click();
         // link.remove();
@@ -231,79 +231,85 @@ export default /*#__PURE__*/defineComponent({
 .toolbar {
   position: -webkit-sticky; /* Safari */
   width: 260px;
+  margin-right:15px;
 }
 .view {
   display: flex;
   flex-direction: row;
 }
 
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=arial]::before, 
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=arial]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=arial]::before {
   content: 'arial';
   font-family: 'arial';
 }
-        
+
 .ql-font-arial {
   font-family: 'arial';
 }
 
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=courier]::before, 
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=courier]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=courier]::before {
   content: 'courier';
   font-family: 'courier';
 }
-        
+
 .ql-font-courier {
   font-family: 'courier';
 }
 
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=garamond]::before, 
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=garamond]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=garamond]::before {
   content: 'garamond';
   font-family: 'garamond';
 }
-        
+
 .ql-font-garamond {
   font-family: 'garamond';
 }
 
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=tahoma]::before, 
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=tahoma]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=tahoma]::before {
   content: 'tahoma';
   font-family: 'tahoma';
 }
-        
+
 .ql-font-tahoma {
   font-family: 'tahoma';
 }
 
-ql-snow .ql-picker.ql-font .ql-picker-label[data-value=times-new-roman]::before, 
+ql-snow .ql-picker.ql-font .ql-picker-label[data-value=times-new-roman]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=times-new-roman]::before {
   content: 'times-new-roman';
   font-family: 'times-new-roman';
 }
-        
+
 .ql-font-times-new-roman {
   font-family: 'times-new-roman';
 }
 
-ql-snow .ql-picker.ql-font .ql-picker-label[data-value=times-newer-roman]::before, 
+ql-snow .ql-picker.ql-font .ql-picker-label[data-value=times-newer-roman]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=times-newer-roman]::before {
   content: 'times-newer-roman';
   font-family: 'times-newer-roman';
 }
-        
+
 .ql-font-times-newer-roman {
   font-family: 'times-newer-roman';
 }
 
-ql-snow .ql-picker.ql-font .ql-picker-label[data-value=verdana]::before, 
+ql-snow .ql-picker.ql-font .ql-picker-label[data-value=verdana]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=verdana]::before {
   content: 'verdana';
   font-family: 'verdana';
 }
-        
+
 .ql-font-verdana {
   font-family: 'verdana';
+}
+
+#iframe-preview{
+  width:100%;
+  min-height:100vh;
 }
 </style>

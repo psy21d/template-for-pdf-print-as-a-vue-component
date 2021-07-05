@@ -19,7 +19,7 @@ import { mock, buttons } from "@/mock/example.js"
 
 export default {
   name: 'Toolbar',
-  
+
   props: {
     buttons: {
       type: Object,
@@ -41,10 +41,11 @@ export default {
 button.panel-button {
   background: none;
   border: 1px solid #ccc;
-  margin: 6px;
+  margin: 6px 0;
   padding: 6px;
   cursor: pointer;
   min-width: 200px;
+  width:100%;
 }
 button:hover.panel-button {
   background-color: #dfe;
@@ -54,10 +55,11 @@ button:hover.panel-button {
 button.make-button {
   background-color: #fcc;
   border: 1px solid #ccc;
-  margin: 6px;
+  margin: 6px 0;
   padding: 6px;
   cursor: pointer;
   min-width: 200px;
+  width:100%;
 }
 button:hover.make-button {
   background-color: #fce;
