@@ -47,6 +47,6 @@ export async function pdfPreview(data) {
   const iframe = document.getElementById('iframe-preview')
 
   const bData = await blobToBase64(blob)
-  iframe.setAttribute('src', `data:application/pdf;base64,${bData}`);
-  document.body.appendChild(iframe);
+  iframe.setAttribute('src', `data:application/pdf;base64,${bData}#zoom=FitH`);
+  //document.body.appendChild(iframe);
 }
