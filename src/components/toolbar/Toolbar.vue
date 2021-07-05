@@ -1,6 +1,7 @@
 <template>
     <button class="make-button" @click="$emit('print')">print</button>
     <button class="make-button" @click="$emit('preview')">preview</button>
+    <button class="make-button" @click="$emit('download')">download</button>
     <button class="make-button" @click="$emit('settable')">set table</button>
     <div>
       <button
@@ -26,7 +27,7 @@ export default {
       default: buttons,
     },
   },
-  emits: ['print','preview','settable'],
+  emits: ['print','preview','download','settable'],
 
   data() {
     return {

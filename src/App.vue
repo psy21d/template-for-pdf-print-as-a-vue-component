@@ -3,6 +3,7 @@
     <div class="toolbar">
       <Toolbar
         @preview="pdftopreview"
+        @download="pdfdownload"
         @settable="settable"
         :buttons="buttons"
       />
@@ -163,7 +164,7 @@ export default /*#__PURE__*/defineComponent({
       emit('change', html)
     }
 
-    const pdftopreview = () => {
+    const combineTemplate = () => {
       let pages = document.getElementsByClassName('ql-editor')
       let renderedPages = pages && pages[0] && pages[0].outerHTML
       const re = /\${([A-Za-z\._]+)}/
@@ -191,23 +192,15 @@ export default /*#__PURE__*/defineComponent({
         style: css,
       })
 
-      pdfPreview({html}).then(() => {
-        //console.log(response)
-        // const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
-        // const link = document.createElement('iframe');
-        // link.setAttribute('src', downloadUrl);
-        // console.log(ifr)
-        // ifr.value.setAttribute('src', downloadUrl);
-        // URL.revokeObjectURL(downloadUrl);
-        // console.log('ok');
+      return html
+    }
 
-        // const link = document.createElement('a');
-        // link.href = downloadUrl;
-        // link.setAttribute('download', 'generate.pdf');
-        // document.body.appendChild(link);
-        // link.click();
-        // link.remove();
-      })
+    const pdftopreview = () => {
+      pdfPreview({ html: combineTemplate() })
+    }
+
+    const pdfdownload = () => {
+      pdfDownload({ html: combineTemplate() })
     }
 
     const settemplate = (tpl) => {
@@ -219,7 +212,7 @@ export default /*#__PURE__*/defineComponent({
       //quill.tableModule.insertTable(3, 3);
     }
 
-    return { state, onEditorBlur, onEditorFocus, onEditorReady, onEditorChange, pdftopreview, settemplate, quill, settable, ifr }
+    return { state, onEditorBlur, onEditorFocus, onEditorReady, onEditorChange, pdftopreview, pdfdownload, settemplate, quill, settable, ifr }
   }
 })
 </script>
